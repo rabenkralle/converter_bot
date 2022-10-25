@@ -22,12 +22,16 @@ def run(message):
     
     filename = download_mp4(link)       # Скачиваем файл в формате mp4
     file_size = os.stat(filename).st_size / (1024 * 1024)       # Определяем размер файла
-    if file_size < 50:       # Если размер меньше 50 мб, то отправдяем файл, как есть (ограничение телеграма). В противном случае отправляем файл по частям
-        bot_send_message(filename, message)
-    else:
-        filenames = split_video(filename, file_size)
-        for filename in filenames:
+    try:
+        if file_size < 50:       # Если размер меньше 50 мб, то отправдяем файл, как есть (ограничение телеграма). В противном случае отправляем файл по частям
             bot_send_message(filename, message)
+        else:
+            filenames = split_video(filename, file_size)
+            for filename in filenames:
+                bot_send_message(filename, message)
+    except:
+        bot.send_message(message.chat.id, "Извините. Что-то пошло не так.")
+    
 
 # Отправка аудиофайла 
 def bot_send_message(filename, message):
